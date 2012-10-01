@@ -1,22 +1,35 @@
 #!/usr/bin/env ruby
 
 require "thor"
+require "thor/group"
 
-module Divergence 
-  class CLI < Thor
-    include Thor::Actions
+module CLI
+  class Init < Thor::Group
+    include ::Thor::Actions
+
+    argument :name
+    desc "Initializes a divergence application"
 
     def self.source_root
       ::File.expand_path('../../generators/files',  __FILE__)
     end
 
-    desc "init", "Initializes a divergence application"
-    def init
-      empty_directory("config")
-      template("config.rb", "config/config.rb")
-      template("config.ru", "files/config.ru")
+    def create_directories
+      empty_directory name
+      empty_directory "#{name}/config"
+    end
+
+    def copy_templates
+      template "config.rb", "#{name}/config/config.rb"
+      template "config.ru", "#{name}/config.ru"
     end
   end
 end
 
-Divergence::CLI.start
+module CLI
+  class Base < Thor
+    register CLI::Init, "init", "init [DIR]", "Initializes a divergence application"
+  end
+end
+
+CLI::Base.start
