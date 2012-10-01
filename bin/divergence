@@ -29,6 +29,16 @@ end
 module CLI
   class Base < Thor
     register CLI::Init, "init", "init [DIR]", "Initializes a divergence application"
+
+    desc "start", "Start divergence"
+    method_options :port => :number
+    def start
+      if options[:port]
+        `rackup -p #{options[:port]}`
+      else
+        `rackup`
+      end
+    end
   end
 end
 
