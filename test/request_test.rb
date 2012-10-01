@@ -22,7 +22,6 @@ class RequestTest < Test::Unit::TestCase
 
   def test_branch
     set_mock_request "master.example.com"
-
     assert_equal app.branch, "master"
   end
 end

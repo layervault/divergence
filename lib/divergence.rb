@@ -2,6 +2,7 @@ require "rack/proxy"
 
 require "divergence/version"
 require "divergence/config"
+require "divergence/webhook"
 
 module Divergence
   class Application < Rack::Proxy
@@ -9,6 +10,12 @@ module Divergence
 
     def self.configure(&block)
       block.call(@@config)
+    end
+
+    def initialize
+      unless File.exists?(config.path)
+        raise "Configured path not found: #{config.path}"
+      end
     end
 
     def config

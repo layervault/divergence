@@ -26,8 +26,9 @@ class Test::Unit::TestCase
     $VERBOSE = old
   end
 
-  def set_mock_request(addr)
-    req = Rack::MockRequest.env_for "http://#{addr}"
+  def set_mock_request(addr, opts={})
+    req = Rack::MockRequest.env_for "http://#{addr}", opts
+
     app.req = Rack::Request.new(req)
   end
 end
