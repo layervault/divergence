@@ -20,12 +20,28 @@ module Divergence
 
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
-      if @req.host.split(".").size < 3
+      unless has_subdomain?
         # No subdomain, simply proxy the request.
         return perform_request(env)
       end
 
       perform_request(env)
+    end
+
+    def host_parts
+      @req.host.split(".")
+    end
+
+    def has_subdomain?
+      host_parts.length > 2
+    end
+
+    def branch
+      if has_subdomain?
+        host_parts.shift
+      else
+        nil
+      end
     end
   end
 end

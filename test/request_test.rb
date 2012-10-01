@@ -9,4 +9,20 @@ class RequestTest < Test::Unit::TestCase
 
     assert last_response.ok?
   end
+
+  def test_has_subdomain
+    set_mock_request "master.example.com"
+    assert app.has_subdomain?
+  end
+
+  def test_no_subdomain
+    set_mock_request "example.com"
+    assert !app.has_subdomain?
+  end
+
+  def test_branch
+    set_mock_request "master.example.com"
+
+    assert_equal app.branch, "master"
+  end
 end
