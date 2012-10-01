@@ -29,7 +29,7 @@ class Test::Unit::TestCase
   def set_mock_request(addr, opts={})
     req = Rack::MockRequest.env_for "http://#{addr}", opts
 
-    app.req = Rack::Request.new(req)
+    app.req = Divergence::RequestParser.new(req)
   end
 end
 

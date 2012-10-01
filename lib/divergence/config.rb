@@ -3,7 +3,11 @@ module Divergence
     attr_accessor :path
 
     def initialize
-      @path = ''
+      @path = '/'
+    end
+
+    def path=(p)
+      @path = File.realpath(p)
     end
   end
 end
