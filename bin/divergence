@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require "thor"
+
+module Divergence 
+  class CLI < Thor
+    include Thor::Actions
+
+    def self.source_root
+      ::File.expand_path('../../generators/files',  __FILE__)
+    end
+
+    desc "init", "Initializes a divergence application"
+    def init
+      empty_directory("config")
+      template("config.rb", "config/config.rb")
+      template("config.ru", "files/config.ru")
+    end
+  end
+end
+
+Divergence::CLI.start
