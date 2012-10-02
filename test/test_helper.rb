@@ -31,10 +31,19 @@ class Test::Unit::TestCase
 
     app.req = Divergence::RequestParser.new(req)
   end
+
+  def mock_get(addr)
+    env = Rack::MockRequest.env_for "http://#{addr}"
+    app.call env
+  end
 end
 
 module Divergence
   class Application < Rack::Proxy
     attr_accessor :req
+
+    def perform_request(env)
+      [200, {"Content-Type" => "text/html"}, ["Ohai"]]
+    end
   end
 end
