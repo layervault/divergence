@@ -16,7 +16,7 @@ Then, since divergence is a rackup application, you will need to initialize it s
 divergence init [FOLDER]
 ```
 
-This create the given folder and copy all of the necessary files for you.
+This creates the given folder and will copy all of the necessary files for you.
 
 If you are using rackup for your web application, you will need to add one line to your config.ru:
 
