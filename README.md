@@ -4,21 +4,31 @@ Divergence is a Rack application that acts as a HTTP proxy between your web serv
 
 ## Installation
 
-Add this line to your application's Gemfile:
+First, you will need to install the gem:
 
-    gem 'divergence'
+```
+gem install divergence
+```
 
-And then execute:
+Then, since divergence is a rackup application, you will need to initialize it somewhere by running:
 
-    $ bundle
+```
+divergence init [FOLDER]
+```
 
-Or install it yourself as:
+This create the given folder and copy all of the necessary files for you.
 
-    $ gem install divergence
+If you are using rackup for your web application, you will need to add one line to your config.ru:
 
-## Usage
+```
+use Rack::Reloader unless ENV['RACK_ENV'] == 'production'
+```
 
-TODO: Write usage instructions here
+This prevents issues when switching the entire codebase around.
+
+## Config
+
+TODO
 
 ## Contributing
 
