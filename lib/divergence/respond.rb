@@ -21,6 +21,8 @@ module Divergence
       # And then perform the codebase swap
       @g.swap!
       
+      env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
+
       # Git is finished, pass the request through.
       perform_request(env)
     end

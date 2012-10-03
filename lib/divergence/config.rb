@@ -3,10 +3,13 @@ module Divergence
     include Enumerable
 
     attr_accessor :app_path, :git_path
+    attr_accessor :forward_host, :forward_port
 
     def initialize
       @git_path = nil
       @app_path = nil
+      @forward_host = 'localhost'
+      @forward_port = 80
     end
 
     def app_path=(p)
