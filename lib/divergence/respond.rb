@@ -17,6 +17,9 @@ module Divergence
       # Ask our GitManager to prepare the directory
       # for the given branch.
       @g.prepare_directory @req.branch
+
+      # And then perform the codebase swap
+      @g.swap!
       
       # Git is finished, pass the request through.
       perform_request(env)

@@ -20,7 +20,7 @@ This creates the given folder and will copy all of the necessary files for you.
 
 If you are using rackup for your web application, you will need to add one line to your config.ru:
 
-```
+``` ruby
 use Rack::Reloader unless ENV['RACK_ENV'] == 'production'
 ```
 

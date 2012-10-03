@@ -19,7 +19,7 @@ module Divergence
     def initialize
       file_checks
 
-      @g = GitManager.new(config.path)
+      @g = GitManager.new(config.git_path, config.app_path)
     end
 
     def config
@@ -29,12 +29,12 @@ module Divergence
     private
 
     def file_checks
-      unless File.exists?(config.path)
-        raise "Configured path not found: #{config.path}"
+      unless File.exists?(config.app_path)
+        raise "Configured path not found: #{config.app_path}"
       end
 
-      unless File.exists?(config.path + "/.git")
-        raise "Configured path is not a Git repository: #{config.path}"
+      unless File.exists?(config.git_path)
+        raise "Configured git path not found: #{config.git_path}"
       end
     end
   end

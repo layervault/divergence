@@ -1,13 +1,30 @@
 module Divergence
   class Configuration
-    attr_accessor :path
+    include Enumerable
+
+    attr_accessor :app_path, :git_path
 
     def initialize
-      @path = '/'
+      @git_path = nil
+      @app_path = nil
     end
 
-    def path=(p)
-      @path = File.realpath(p)
+    def app_path=(p)
+      @app_path = File.realpath(p)
+    end
+
+    def git_path=(p)
+      @git_path = File.realpath(p)
+    end
+
+    def each(&block)
+      instance_variables.each do |v|
+        if block_given?
+          block.call instance_variable_get(v)
+        else
+          yield instance_variable_get(v)
+        end
+      end
     end
   end
 end

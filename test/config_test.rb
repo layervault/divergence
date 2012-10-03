@@ -2,11 +2,15 @@ require 'test_helper'
 
 class ConfigureTest < Test::Unit::TestCase
   def test_config
-    path = File.expand_path('../root', __FILE__)
+    git_path = File.expand_path('../git_root', __FILE__)
+    app_path = File.expand_path('../app_root', __FILE__)
+
     Divergence::Application.configure do |config|
-      config.path = path
+      config.git_path = git_path
+      config.app_path = app_path
     end
 
-    assert app.config.path, path
+    assert app.config.app_path, app_path
+    assert app.config.git_path, git_path
   end
 end

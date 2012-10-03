@@ -1,3 +1,4 @@
 Divergence::Application.configure do |config|
-  config.path = "<%=Dir.pwd%>/<%=name%>"
+  config.git_path = nil
+  config.app_path = nil
 end
