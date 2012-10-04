@@ -12,6 +12,9 @@ module Divergence
       @forward_port = 80
     end
 
+    # Might get rid of realpath in the future because it
+    # resolves symlinks and that could be problematic
+    # with capistrano in case someone accidentally deploys.
     def app_path=(p)
       @app_path = File.realpath(p)
     end
@@ -21,11 +24,11 @@ module Divergence
     end
 
     def each(&block)
-      instance_variables.each do |v|
+      instance_variables.each do |key|
         if block_given?
-          block.call instance_variable_get(v)
+          block.call key, instance_variable_get(key)
         else
-          yield instance_variable_get(v)
+          yield instance_variable_get(key)
         end
       end
     end

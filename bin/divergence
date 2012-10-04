@@ -7,28 +7,27 @@ module CLI
   class Init < Thor::Group
     include ::Thor::Actions
 
-    argument :name
-    desc "Initializes a divergence application"
+    desc "Initializes a divergence application into the current directory"
 
     def self.source_root
       ::File.expand_path('../../generators/files',  __FILE__)
     end
 
     def create_directories
-      empty_directory name
-      empty_directory "#{name}/config"
+      empty_directory "config"
+      empty_directory "log"
     end
 
     def copy_templates
-      template "config.rb", "#{name}/config/config.rb"
-      template "config.ru", "#{name}/config.ru"
+      template "config.rb", "config/config.rb"
+      template "config.ru", "config.ru"
     end
   end
 end
 
 module CLI
   class Base < Thor
-    register CLI::Init, "init", "init [DIR]", "Initializes a divergence application"
+    register CLI::Init, "init", "init", "Initializes a divergence application into the current directory"
 
     desc "start", "Start divergence"
     method_options :port => :number

@@ -1,5 +1,6 @@
 require "rack/proxy"
 require "git"
+require "logger"
 
 require "divergence/version"
 require "divergence/config"

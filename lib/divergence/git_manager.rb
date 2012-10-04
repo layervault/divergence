@@ -6,7 +6,12 @@ module Divergence
     def initialize(git_path, app_path)
       @app_path = app_path
       @git_path = git_path
-      @git = Git.open(git_path)
+
+      @log = Logger.new('./log/git.log')
+      @git = Git.open(git_path, :log => @log)
+
+      @current_branch = @git.branch
+      @new_branch = false
     end
 
     def prepare_directory(branch)
@@ -18,24 +23,38 @@ module Divergence
     # the .git directory, but this is a temporary dumb solution.
     # TODO: make this more ruby-like.
     def swap!
+      return unless @new_branch
+      
+      @log.info "Swap: #{@git_path} -> #{@app_path}"
       `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
+      @new_branch = false
     end
 
     private
 
     def is_current?(branch)
-      @git.branch(branch).current
+      @current_branch == branch
     end
 
     def pull(branch)
-      checkout branch
-      @git.pull :origin, branch
+      if checkout(branch)
+        @git.pull :origin, branch
+      else
+        return false
+      end
     end
 
     def checkout(branch)
       fetch
       reset
-      @git.branch(branch).checkout
+      
+      begin
+        @git.checkout branch
+        @current_branch = branch
+        @new_branch = true
+      rescue
+        return false
+      end
     end
 
     def reset
