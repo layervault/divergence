@@ -15,4 +15,9 @@ class RequestTest < Test::Unit::TestCase
     set_mock_request "master.example.com"
     assert_equal app.req.branch, "master"
   end
+
+  def test_missing_branch
+    status, _, _ = mock_get "idontexist.example.com"
+    assert_equal status, 404
+  end
 end

@@ -1,7 +1,7 @@
 module Divergence
   class Application < Rack::Proxy
     def call(env)
-      @req = RequestParser.new(env)
+      @req = RequestParser.new(env, @g)
 
       if is_webhook?
         return handle_webhook
@@ -23,8 +23,8 @@ module Divergence
 
       # And then perform the codebase swap
       @g.swap!
-      
-      env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
+
+      fix_environment!(env)
 
       # Git is finished, pass the request through.
       status, header, body = perform_request(env)
@@ -41,7 +41,13 @@ module Divergence
 
     private
 
+    def fix_environment!(env)
+      env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
+    end
+
     def error!
+      @log.error "Branch #{@req.branch} does not exist"
+      @log.error @req.raw
       [404, {"Content-Type" => "text/html"}, ["ERROR"]]
     end
   end

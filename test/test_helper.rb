@@ -28,8 +28,8 @@ class Test::Unit::TestCase
 
   def set_mock_request(addr, opts={})
     req = Rack::MockRequest.env_for "http://#{addr}", opts
-
-    app.req = Divergence::RequestParser.new(req)
+    git = Divergence::GitManager.new(Divergence::Application.config)
+    app.req = Divergence::RequestParser.new(req, git)
   end
 
   def mock_get(addr)

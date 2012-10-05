@@ -4,7 +4,7 @@ class GitTest < Test::Unit::TestCase
   def force_branch(branch)
     git = Git.open('test/git_root')
     git.reset_hard('HEAD')
-    git.branch(branch.to_s).checkout
+    git.checkout branch.to_s, :force => true
   end
 
   def test_ignore
@@ -12,11 +12,11 @@ class GitTest < Test::Unit::TestCase
     mock_get 'master.example.com'
 
     git = Git.open('test/git_root')
-    assert git.branch('master').current
+    assert_equal "master", git.current_branch
 
     # and again...
     mock_get 'master.example.com'
-    assert git.branch('master').current
+    assert_equal 'master', git.current_branch
   end
 
   def test_switch_branch
@@ -24,7 +24,7 @@ class GitTest < Test::Unit::TestCase
     mock_get 'branch1.example.com'
 
     git = Git.open('test/git_root')
-    assert git.branch('branch1').current
+    assert_equal 'branch1', git.current_branch
   end
 
   def test_dirty_switch
@@ -37,7 +37,7 @@ class GitTest < Test::Unit::TestCase
     mock_get 'branch1.example.com'
 
     git = Git.open('test/git_root')
-    assert git.branch('branch1').current
+    assert_equal 'branch1', git.current_branch
   end
 
   def test_swap
@@ -50,7 +50,7 @@ class GitTest < Test::Unit::TestCase
     contents = file.read.strip
     file.close
 
-    assert_equal contents, "master"
+    assert_equal "master", contents
 
     mock_get "branch1.example.com"
 
@@ -59,6 +59,6 @@ class GitTest < Test::Unit::TestCase
     contents = file.read.strip
     file.close
 
-    assert_equal contents, "branch1"
+    assert_equal "branch1", contents
   end
 end

@@ -10,6 +10,7 @@ module Divergence
       @app_path = nil
       @forward_host = 'localhost'
       @forward_port = 80
+      @callback_store = {}
     end
 
     # Might get rid of realpath in the future because it
@@ -21,6 +22,15 @@ module Divergence
 
     def git_path=(p)
       @git_path = File.realpath(p)
+    end
+
+    def callbacks(name, &block)
+      @callback_store[name] = block
+    end
+
+    def callback(name)
+      return unless @callback_store.has_key?(name)
+      @callback_store[name].call
     end
 
     def each(&block)

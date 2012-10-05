@@ -20,7 +20,12 @@ module Divergence
     def initialize
       file_checks
 
-      @g = GitManager.new(config.git_path, config.app_path)
+      @g = GitManager.new(config)
+      @log = Logger.new('./log/rack.log')
+    end
+
+    def self.config
+      @@config
     end
 
     def config

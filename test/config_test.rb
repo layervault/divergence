@@ -8,6 +8,11 @@ class ConfigureTest < Test::Unit::TestCase
     Divergence::Application.configure do |config|
       config.git_path = git_path
       config.app_path = app_path
+      config.forward_host = 'localhost'
+      config.forward_port = 80
+
+      config.callbacks :after_swap do
+      end
     end
 
     assert app.config.app_path, app_path

@@ -1,7 +1,8 @@
 module Divergence
   class RequestParser
-    def initialize(env)
+    def initialize(env, git)
       @req = Rack::Request.new(env)
+      @git = git
     end
 
     def raw
@@ -18,7 +19,13 @@ module Divergence
 
     def branch
       if has_subdomain?
-        host_parts.shift
+        branch = host_parts.shift
+
+        if branch['-']
+          @git.discover(branch)
+        else
+          branch
+        end
       else
         nil
       end

@@ -1,14 +1,12 @@
-require 'find'
-require 'fileutils'
-
 module Divergence
   class GitManager
-    def initialize(git_path, app_path)
-      @app_path = app_path
-      @git_path = git_path
+    def initialize(config)
+      @config = config
+      @app_path = config.app_path
+      @git_path = config.git_path
 
       @log = Logger.new('./log/git.log')
-      @git = Git.open(git_path, :log => @log)
+      @git = Git.open(@git_path, :log => @log)
 
       @current_branch = @git.branch
       @new_branch = false
@@ -28,6 +26,47 @@ module Divergence
       @log.info "Swap: #{@git_path} -> #{@app_path}"
       `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
       @new_branch = false
+
+      Dir.chdir @config.app_path do
+        @config.callback :after_swap
+      end
+    end
+
+    # Since underscores are technically not allowed in URLs,
+    # but they are allowed in Git branch names, we have to do
+    # some magic to possibly convert dashes to underscores
+    # so we can load the right branch.
+    def discover(branch)
+      return branch if @git.is_branch?(branch)
+
+      # First, we get the indicies of all the dashes in the
+      # given branch name.
+      indices = []
+      branch.scan(/-/) do |c|
+        indices << $~.offset(0)[0]
+      end
+
+      # Now we test all permutations of the string to see which
+      # branch exists.
+      tested = {}
+      for i in 0..indices.length
+        perm = indices.permutation(i).to_a
+
+        perm.each do |p|
+          # Don't want to modify the original
+          test = String.new(branch)
+
+          p.each do |index|
+            test[index] = "_"
+          end
+
+          next if tested.has_key?(test)
+          tested[test] = true
+          
+          return test if @git.is_branch?(test)
+        end        
+      end
+      
     end
 
     private
@@ -49,7 +88,7 @@ module Divergence
       reset
       
       begin
-        @git.checkout branch
+        @git.checkout branch, :force => true
         @current_branch = branch
         @new_branch = true
       rescue
