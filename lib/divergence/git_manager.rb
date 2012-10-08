@@ -19,6 +19,10 @@ module Divergence
     # Performs the swap between the git directory and the working
     # app directory. We want to copy the files without copying
     # the .git directory, but this is a temporary dumb solution.
+    #
+    # Future idea: try the capistrano route and simply symlink
+    # to the git directory instead of copying files.
+    #
     # TODO: make this more ruby-like.
     def swap!
       return unless @new_branch
@@ -66,7 +70,6 @@ module Divergence
           return test if @git.is_branch?(test)
         end        
       end
-      
     end
 
     private
@@ -77,7 +80,13 @@ module Divergence
 
     def pull(branch)
       if checkout(branch)
-        @git.pull :origin, branch
+        #@git.pull 'origin', branch
+        @git.chdir do
+          # For some reason, I'm having issues with the pull
+          # that's built into the library. Doing this manually
+          # for now.
+          `git pull origin #{branch} 2>&1`
+        end
       else
         return false
       end
