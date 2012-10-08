@@ -27,6 +27,17 @@ class GitTest < Test::Unit::TestCase
     assert_equal 'branch1', git.current_branch
   end
 
+  def test_branch_discover
+    force_branch :master
+    mock_get 'branch-1.example.com'
+
+    git = Git.open('test/git_root')
+    assert_equal 'branch_1', git.current_branch
+
+    mock_get 'branch-with-complex-name-1.example.com'
+    assert_equal 'branch_with_complex_name-1', git.current_branch
+  end
+
   def test_dirty_switch
     force_branch :master
 

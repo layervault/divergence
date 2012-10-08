@@ -40,6 +40,11 @@ module Divergence
     # but they are allowed in Git branch names, we have to do
     # some magic to possibly convert dashes to underscores
     # so we can load the right branch.
+    #
+    # Another possible thing to explore is converting all
+    # dashes in the URL to a regex search against all branches
+    # in this repository to avoid the current brute-force
+    # solution we're using.
     def discover(branch)
       return branch if @git.is_branch?(branch)
 
