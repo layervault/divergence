@@ -1,6 +1,10 @@
 require "bundler/gem_tasks"
-
 require "rake/testtask"
+
+task :docs do
+  `rdoc --main lib/divergence.rb lib`
+end
+
 namespace :test do
   Rake::TestTask.new(:rack) do |t|
     t.libs << "test"
