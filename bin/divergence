@@ -20,6 +20,7 @@ module CLI
 
     def copy_templates
       template "config.rb", "config/config.rb"
+      template "callbacks.rb", "config/callbacks.rb"
       template "config.ru", "config.ru"
     end
   end

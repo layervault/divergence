@@ -13,7 +13,8 @@ module Divergence
     end
 
     def prepare_directory(branch)
-      pull branch unless is_current?(branch)
+      return if is_current?(branch)
+      pull branch
     end
 
     # Performs the swap between the git directory and the working
@@ -26,6 +27,10 @@ module Divergence
     # TODO: make this more ruby-like.
     def swap!
       return unless @new_branch
+
+      Dir.chdir @config.git_path do
+        @config.callback :before_swap
+      end
       
       Application.log.info "Swap: #{@git_path} -> #{@app_path}"
       `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
@@ -47,6 +52,14 @@ module Divergence
     # solution we're using.
     def discover(branch)
       return branch if @git.is_branch?(branch)
+
+      Dir.chdir @config.git_path do
+        resp = @config.callback :on_branch_discover, branch
+
+        unless resp.nil?
+          return resp
+        end
+      end
 
       # First, we get the indicies of all the dashes in the
       # given branch name.
@@ -85,6 +98,10 @@ module Divergence
 
     def pull(branch)
       if checkout(branch)
+        Dir.chdir @config.git_path do
+          @config.callback :before_pull
+        end
+
         #@git.pull 'origin', branch
         @git.chdir do
           # For some reason, I'm having issues with the pull
@@ -92,7 +109,15 @@ module Divergence
           # for now.
           `git pull origin #{branch} 2>&1`
         end
+
+        Dir.chdir @config.git_path do
+          @config.callback :after_pull
+        end
       else
+        Dir.chdir @config.git_path do
+          @config.callback :on_pull_error
+        end
+
         return false
       end
     end

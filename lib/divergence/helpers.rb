@@ -6,8 +6,8 @@ module Divergence
       @config = config
     end
 
-    def execute(block)
-      self.instance_eval &block
+    def execute(block, opts={})
+      self.instance_exec opts, &block
     end
 
     private
