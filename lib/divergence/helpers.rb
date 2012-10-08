@@ -12,8 +12,18 @@ module Divergence
 
     private
 
+    def bundle_install
+      Application.log.debug "bundle install"
+      
+      Dir.chdir @config.app_path do
+        `bundle install`
+      end
+    end
+
     def restart_passenger
-      Dir.chdir @config.app_dir do
+      Application.log.debug "Restarting passenger..."
+
+      Dir.chdir @config.app_path do
         FileUtils.touch 'tmp/restart.txt'
       end
     end

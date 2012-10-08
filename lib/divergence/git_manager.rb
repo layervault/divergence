@@ -27,7 +27,7 @@ module Divergence
     def swap!
       return unless @new_branch
       
-      @log.info "Swap: #{@git_path} -> #{@app_path}"
+      Application.log.info "Swap: #{@git_path} -> #{@app_path}"
       `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
       @new_branch = false
 

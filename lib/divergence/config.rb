@@ -32,6 +32,8 @@ module Divergence
 
     def callback(name)
       return unless @callback_store.has_key?(name)
+
+      Application.log.debug "Execute callback: #{name.to_s}"
       @helpers.execute @callback_store[name]
     end
 

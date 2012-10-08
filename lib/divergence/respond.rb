@@ -46,8 +46,8 @@ module Divergence
     end
 
     def error!
-      @log.error "Branch #{@req.branch} does not exist"
-      @log.error @req.raw
+      Application.log.error "Branch #{@req.branch} does not exist"
+      Application.log.error @req.raw
       [404, {"Content-Type" => "text/html"}, ["ERROR"]]
     end
   end

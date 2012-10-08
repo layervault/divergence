@@ -13,20 +13,24 @@ require "divergence/webhook"
 module Divergence
   class Application < Rack::Proxy
     @@config = Configuration.new
+    @@log = Logger.new('./log/app.log')
 
     def self.configure(&block)
       block.call(@@config)
+    end
+
+    def self.log
+      @@log
+    end
+
+    def self.config
+      @@config
     end
 
     def initialize
       file_checks
 
       @g = GitManager.new(config)
-      @log = Logger.new('./log/rack.log')
-    end
-
-    def self.config
-      @@config
     end
 
     def config
