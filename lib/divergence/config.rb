@@ -11,6 +11,8 @@ module Divergence
       @forward_host = 'localhost'
       @forward_port = 80
       @callback_store = {}
+
+      @helpers = Divergence::Helpers.new(self)
     end
 
     # Might get rid of realpath in the future because it
@@ -30,7 +32,7 @@ module Divergence
 
     def callback(name)
       return unless @callback_store.has_key?(name)
-      @callback_store[name].call
+      @helpers.execute @callback_store[name]
     end
 
     def each(&block)
