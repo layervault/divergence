@@ -8,7 +8,6 @@ require "divergence/git_manager"
 require "divergence/helpers"
 require "divergence/request_parser"
 require "divergence/respond"
-require "divergence/webhook"
 
 module Divergence
   class Application < Rack::Proxy

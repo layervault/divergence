@@ -3,10 +3,6 @@ module Divergence
     def call(env)
       @req = RequestParser.new(env, @g)
 
-      if is_webhook?
-        return handle_webhook
-      end
-
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
       unless @req.has_subdomain?
