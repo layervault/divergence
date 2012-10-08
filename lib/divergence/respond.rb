@@ -45,11 +45,12 @@ module Divergence
       Application.log.error "Branch #{@req.branch} does not exist"
       Application.log.error @req.raw
 
-      file = File.open("../public/404.html", "r")
+      public_path = File.expand_path('../../../public', __FILE__)
+      file = File.open("#{public_path}/404.html", "r")
       contents = file.read
       file.close
 
-      [404, {"Content-Type" => "text/html"}, contents]
+      [404, {"Content-Type" => "text/html"}, [contents]]
     end
   end
 end
