@@ -10,9 +10,6 @@ class ConfigureTest < Test::Unit::TestCase
       config.app_path = app_path
       config.forward_host = 'localhost'
       config.forward_port = 80
-
-      config.callbacks :after_swap do
-      end
     end
 
     assert app.config.app_path, app_path

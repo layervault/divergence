@@ -44,7 +44,12 @@ module Divergence
     def error!
       Application.log.error "Branch #{@req.branch} does not exist"
       Application.log.error @req.raw
-      [404, {"Content-Type" => "text/html"}, ["ERROR"]]
+
+      file = File.open("../public/404.html", "r")
+      contents = file.read
+      file.close
+
+      [404, {"Content-Type" => "text/html"}, contents]
     end
   end
 end
