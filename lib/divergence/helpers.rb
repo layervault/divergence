@@ -24,7 +24,10 @@ module Divergence
       Application.log.debug "Restarting passenger..."
 
       Dir.chdir @config.app_path do
-        FileUtils.touch 'tmp/restart.txt'
+        begin
+          FileUtils.touch 'tmp/restart.txt'
+        rescue
+        end
       end
     end
   end

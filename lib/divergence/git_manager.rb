@@ -32,6 +32,10 @@ module Divergence
         @config.callback :before_swap
       end
       
+      # This is a dirty temporary solution. In the future we should
+      # cache each branch in it's own folder.
+      FileUtils.rm_rf "#{@app_root}/*"
+
       Application.log.info "Swap: #{@git_path} -> #{@app_path}"
       `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
       @new_branch = false
@@ -51,49 +55,49 @@ module Divergence
     # in this repository to avoid the current brute-force
     # solution we're using.
     def discover(branch)
-      return branch if @git.is_branch?(branch)
+      return branch if is_branch?(branch)
 
-      Dir.chdir @config.git_path do
+      Dir.chdir @git_path do
         resp = @config.callback :on_branch_discover, branch
 
         unless resp.nil?
           return resp
         end
-      end
+      
+        local_search = "^" + branch.gsub(/-/, ".") + "$"
+        remote_search = "^remotes/origin/(" + branch.gsub(/-/, ".") + ")$"
+        local_r = Regexp.new(local_search, Regexp::IGNORECASE)
+        remote_r = Regexp.new(remote_search, Regexp::IGNORECASE)
 
-      # First, we get the indicies of all the dashes in the
-      # given branch name.
-      indices = []
-      branch.scan(/-/) do |c|
-        indices << $~.offset(0)[0]
-      end
-
-      # Now we test all permutations of the string to see which
-      # branch exists.
-      tested = {}
-      for i in 0..indices.length
-        perm = indices.permutation(i).to_a
-
-        perm.each do |p|
-          # Don't want to modify the original
-          test = String.new(branch)
-
-          p.each do |index|
-            test[index] = "_"
-          end
-
-          next if tested.has_key?(test)
-          tested[test] = true
+        `git branch -a`.split("\n").each do |b|
+          b = b.gsub('*', '').strip
           
-          return test if @git.is_branch?(test)
-        end        
+          return b if local_r.match(b)
+          if remote_r.match(b)
+            return remote_r.match(b)[1]
+          end
+        end
       end
+
+      raise "Unable to automatically detect branch. Given = #{branch}"
     end
 
     private
 
     def is_current?(branch)
       @current_branch == branch
+    end
+
+    def is_branch?(branch)
+      Dir.chdir @git_path do
+        # This is fast, but only works on locally checked out branches
+        `git show-ref --verify --quiet 'refs/heads/#{branch}'`
+        return true if $?.exitstatus == 0
+
+        # This is slow and will only get called for remote branches.
+        result = `git ls-remote --heads origin 'refs/heads/#{branch}'`
+        return result.strip.length != 0
+      end
     end
 
     def pull(branch)
