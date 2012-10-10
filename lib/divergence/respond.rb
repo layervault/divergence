@@ -5,6 +5,9 @@ module Divergence
     def call(env)
       @req = RequestParser.new(env, @g)
 
+      # Set the forwarding host always
+      fix_environment!(env)
+
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
       unless @req.has_subdomain?
@@ -27,9 +30,6 @@ module Divergence
 
       # And then perform the codebase swap
       @g.swap!
-
-      # Set the forwarding host
-      fix_environment!(env)
 
       # Git is finished, pass the request through.
       status, header, body = perform_request(env)
