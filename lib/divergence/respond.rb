@@ -10,6 +10,10 @@ module Divergence
         return perform_request(env)
       end
 
+      if @req.is_webhook?
+        return Webhook.handle @g, @req
+      end
+
       # Ask our GitManager to prepare the directory
       # for the given branch.
       result = @g.prepare_directory @req.branch

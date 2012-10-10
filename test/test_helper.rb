@@ -17,6 +17,12 @@ class Test::Unit::TestCase
     @d
   end
 
+  def force_branch(branch)
+    git = Git.open('test/git_root')
+    git.reset_hard('HEAD')
+    git.checkout branch.to_s, :force => true
+  end
+
   # We have to rewrite the host constant in rack-test
   # in order to set a host with a subdomain. Gross.
   def set_request_addr(addr)
@@ -32,9 +38,26 @@ class Test::Unit::TestCase
     app.req = Divergence::RequestParser.new(req, git)
   end
 
-  def mock_get(addr)
-    env = Rack::MockRequest.env_for "http://#{addr}"
+  def mock_get(addr, params={})
+    env = Rack::MockRequest.env_for "http://#{addr}",
+      :params => params
+
     app.call env
+  end
+
+  def mock_post(addr, params={})
+    env = Rack::MockRequest.env_for "http://#{addr}",
+      :method => :post,
+      :params => params
+
+    app.call env
+  end
+
+  def mock_webhook(branch)
+    mock_post "divergence.example.com/update",
+      :payload => JSON.generate({
+        :ref => "refs/heads/#{branch.to_s}"
+        })
   end
 end
 

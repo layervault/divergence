@@ -1,12 +1,6 @@
 require 'test_helper'
 
 class GitTest < Test::Unit::TestCase
-  def force_branch(branch)
-    git = Git.open('test/git_root')
-    git.reset_hard('HEAD')
-    git.checkout branch.to_s, :force => true
-  end
-
   def test_ignore
     force_branch :master
     mock_get 'master.example.com'
@@ -53,16 +47,6 @@ class GitTest < Test::Unit::TestCase
 
   def test_swap
     force_branch :master
-    mock_get "master.example.com"
-
-    assert File.exists? 'test/app_root/test.txt'
-
-    file = File.open 'test/app_root/test.txt'
-    contents = file.read.strip
-    file.close
-
-    assert_equal "master", contents
-
     mock_get "branch1.example.com"
 
     assert File.exists? 'test/app_root/test.txt'

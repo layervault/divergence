@@ -1,5 +1,7 @@
 module Divergence
   class GitManager
+    attr_reader :current_branch
+
     def initialize(config)
       @config = config
       @app_path = config.app_path
@@ -12,8 +14,8 @@ module Divergence
       @new_branch = false
     end
 
-    def prepare_directory(branch)
-      return if is_current?(branch)
+    def prepare_directory(branch, force=false)
+      return if is_current?(branch) and !force
       pull branch
     end
 
@@ -31,13 +33,9 @@ module Divergence
       Dir.chdir @config.git_path do
         @config.callback :before_swap
       end
-      
-      # This is a dirty temporary solution. In the future we should
-      # cache each branch in it's own folder.
-      FileUtils.rm_rf "#{@app_root}/*"
 
       Application.log.info "Swap: #{@git_path} -> #{@app_path}"
-      `rsync -a --exclude=.git #{@git_path}/* #{@app_path}`
+      `rsync -a --delete --exclude=.git #{@git_path}/* #{@app_path}`
       @new_branch = false
 
       Dir.chdir @config.app_path do
@@ -82,11 +80,11 @@ module Divergence
       raise "Unable to automatically detect branch. Given = #{branch}"
     end
 
-    private
-
     def is_current?(branch)
-      @current_branch == branch
+      @current_branch.to_s == branch
     end
+
+    private
 
     def is_branch?(branch)
       Dir.chdir @git_path do
@@ -111,6 +109,7 @@ module Divergence
           # For some reason, I'm having issues with the pull
           # that's built into the library. Doing this manually
           # for now.
+          @log.info "git pull origin #{branch} 2>&1"
           `git pull origin #{branch} 2>&1`
         end
 

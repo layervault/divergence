@@ -9,6 +9,12 @@ module Divergence
       @req
     end
 
+    def is_webhook?
+      subdomain == "divergence" and 
+      @req.env['PATH_INFO'] == "/update" and
+      @req.post?
+    end
+
     def host_parts
       @req.host.split(".")
     end
@@ -17,9 +23,17 @@ module Divergence
       host_parts.length > 2
     end
 
+    def subdomain
+      if has_subdomain?
+        host_parts.shift
+      else
+        nil
+      end
+    end
+
     def branch
       if has_subdomain?
-        branch = host_parts.shift
+        branch = subdomain
 
         if branch['-']
           @git.discover(branch)
