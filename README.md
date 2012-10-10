@@ -61,6 +61,26 @@ There are also some built-in helper methods that are available inside callbacks.
 * bundle_install
 * restart_passenger
 
+## Running
+
+To start divergence, simply run in the divergence directory you initialized:
+
+```
+divergence start
+```
+
+This will start up divergence on port 9292 by default. If you'd like divergence to run on a different port, you can specify that as well:
+
+```
+divergence start --port=88
+```
+
+### Port 80
+
+On many systems, running on port 80 requires special permissions. If you try starting divergence, but get the error `TCPServer Error: Permission denied - bind(2)`, then you will need to run divergence with sudo (or as root). If you use RVM to manage multiple Ruby versions, then you can use `rvmsudo` instead.
+
+Make sure, if you're using Git over SSH, that you have your repository's host added to your known hosts file for the root user.
+
 ## Contributing
 
 1. Fork it
