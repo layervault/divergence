@@ -16,12 +16,15 @@ module CLI
     def create_directories
       empty_directory "config"
       empty_directory "log"
+      empty_directory "public"
+      empty_directory "tmp"
     end
 
     def copy_templates
       template "config.rb", "config/config.rb"
       template "callbacks.rb", "config/callbacks.rb"
       template "config.ru", "config.ru"
+      template "Gemfile", "Gemfile"
     end
   end
 end
@@ -30,7 +33,7 @@ module CLI
   class Base < Thor
     register CLI::Init, "init", "init", "Initializes a divergence application into the current directory"
 
-    desc "start", "Start divergence"
+    desc "start", "Start divergence in development mode"
     method_options :port => :number
     def start
       if options[:port]
