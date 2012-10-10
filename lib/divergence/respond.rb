@@ -28,24 +28,26 @@ module Divergence
       # And then perform the codebase swap
       @g.swap!
 
-      # Git is finished, pass the request through.
-      status, header, body = proxy(env)
-
-      # This is super weird. Not sure why there is a status
-      # header coming through, but Rack::Lint complains about
-      # it, so we just remove it.
-      if header.has_key?('Status')
-        header.delete 'Status'
-      end
-
-      [status, header, body]
+      # We're finished, pass the request through.
+      proxy(env)
     end
 
     private
 
     def proxy(env)
       fix_environment!(env)
-      perform_request(env)
+      
+      status, header, body = perform_request(env)
+
+      # This is super weird. Not sure why there is a status
+      # header coming through, but Rack::Lint complains about
+      # it, so we just remove it. I think this might be coming
+      # from Cloudfront (if you use it).
+      if header.has_key?('Status')
+        header.delete 'Status'
+      end
+
+      [status, header, body]
     end
 
     # Sets the forwarding host for the request. This is where
