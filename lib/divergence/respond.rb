@@ -5,14 +5,11 @@ module Divergence
     def call(env)
       @req = RequestParser.new(env, @g)
 
-      # Set the forwarding host always
-      fix_environment!(env)
-
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
       unless @req.has_subdomain?
         # No subdomain, simply proxy the request.
-        return perform_request(env)
+        return proxy(env)
       end
 
       # Handle webhooks from Github for updating the current
@@ -32,7 +29,7 @@ module Divergence
       @g.swap!
 
       # Git is finished, pass the request through.
-      status, header, body = perform_request(env)
+      status, header, body = proxy(env)
 
       # This is super weird. Not sure why there is a status
       # header coming through, but Rack::Lint complains about
@@ -45,6 +42,11 @@ module Divergence
     end
 
     private
+
+    def proxy(env)
+      fix_environment!(env)
+      perform_request(env)
+    end
 
     # Sets the forwarding host for the request. This is where
     # the proxy comes in.
