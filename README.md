@@ -56,6 +56,10 @@ The available callbacks are:
   * Executes if the subdomain has a dash in the name. The subdomain name is passed to the callback in the options hash.
   * If the callback returns nil, Divergence will try to auto-detect the branch name, otherwise it will use whatever you return.
 
+There are also some built-in helper methods that are available inside callbacks. They are:
+
+* bundle_install
+* restart_passenger
 
 ## Contributing
 
