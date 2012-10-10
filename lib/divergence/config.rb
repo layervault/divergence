@@ -10,8 +10,8 @@ module Divergence
       @app_path = nil
       @forward_host = 'localhost'
       @forward_port = 80
-      @callback_store = {}
 
+      @callback_store = {}
       @helpers = Divergence::Helpers.new(self)
     end
 
@@ -26,15 +26,23 @@ module Divergence
       @git_path = File.realpath(p)
     end
 
+    # Lets a user define a callback for a specific event
     def callbacks(name, &block)
-      @callback_store[name] = block
+      unless @callback_store.has_key?(name)
+        @callback_store[name] = []
+      end
+
+      @callback_store[name].push block
     end
 
     def callback(name, args = {})
       return unless @callback_store.has_key?(name)
 
       Application.log.debug "Execute callback: #{name.to_s}"
-      @helpers.execute @callback_store[name], args
+
+      @callback_store[name].each do |cb|
+        @helpers.execute cb, args
+      end
     end
 
     def each(&block)

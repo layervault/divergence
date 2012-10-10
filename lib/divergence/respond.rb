@@ -1,5 +1,7 @@
 module Divergence
   class Application < Rack::Proxy
+    # The main entry point for the application. This is caled
+    # by Rack.
     def call(env)
       @req = RequestParser.new(env, @g)
 
@@ -10,6 +12,8 @@ module Divergence
         return perform_request(env)
       end
 
+      # Handle webhooks from Github for updating the current
+      # branch if necessary.
       if @req.is_webhook?
         return Webhook.handle @g, @req
       end
@@ -24,6 +28,7 @@ module Divergence
       # And then perform the codebase swap
       @g.swap!
 
+      # Set the forwarding host
       fix_environment!(env)
 
       # Git is finished, pass the request through.
@@ -41,6 +46,8 @@ module Divergence
 
     private
 
+    # Sets the forwarding host for the request. This is where
+    # the proxy comes in.
     def fix_environment!(env)
       env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
     end
