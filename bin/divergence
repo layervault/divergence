@@ -30,14 +30,14 @@ module CLI
   class Base < Thor
     register CLI::Init, "init", "init", "Initializes a divergence application into the current directory"
 
-    desc "start", "Start divergence in development mode"
-    method_options :port => :number
+    desc "start", "Start divergence"
+    method_options :port => :number, :dev => :boolean
     def start
-      if options[:port]
-        `rackup -p #{options[:port]}`
-      else
-        `rackup`
-      end
+      cmd = 'rackup'
+      cmd << " -p #{options[:port]}" if options[:port]
+      cmd << " -D" unless options[:dev]
+      
+      exec cmd
     end
   end
 end

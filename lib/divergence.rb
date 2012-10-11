@@ -3,6 +3,7 @@ require "git"
 require "json"
 require "logger"
 
+require "rack_ssl_hack"
 require "divergence/version"
 require "divergence/config"
 require "divergence/git_manager"

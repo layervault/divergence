@@ -28,9 +28,9 @@ This prevents issues when switching the entire codebase around.
 
 ## Config
 
-All configuration happens in `config/config.rb`. You must set the git repository root and the application root before using Divergence.
+All configuration happens in `config/config.rb`. You must set the git repository root and the application root before using divergence.
 
-You will probably want Divergence to take over port 80 on your testing server, so you may have to update the forwarding host/port. Note, this is the address where your actual web application can be reached.
+You will probably want divergence to take over port 80 on your testing server, so you may have to update the forwarding host/port. Note, this is the address where your actual web application can be reached.
 
 ### Callbacks
 
@@ -75,11 +75,22 @@ This will start up divergence on port 9292 by default. If you'd like divergence 
 divergence start --port=88
 ```
 
+There is also a `--dev` flag that will run divergence in the foreground instead of daemonizing it.
+
 ### Port 80
 
 On many systems, running on port 80 requires special permissions. If you try starting divergence, but get the error `TCPServer Error: Permission denied - bind(2)`, then you will need to run divergence with sudo (or as root). If you use RVM to manage multiple Ruby versions, then you can use `rvmsudo` instead.
 
 Make sure, if you're using Git over SSH, that you have your repository's host added to your known hosts file for the root user.
+
+### HTTPS
+
+Divergence currently does not support HTTPS on its own; however, you can still use HTTPS in combination with a load balancer if you enable SSL termination.
+
+## TODO
+
+* Handle multiple users at the same time
+* Build-in HTTPS support
 
 ## Contributing
 
