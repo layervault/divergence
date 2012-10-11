@@ -61,6 +61,16 @@ There are also some built-in helper methods that are available inside callbacks.
 * bundle_install
 * restart_passenger
 
+### Github Service Hook
+
+You can automatically keep the currently active branch up to date by using a Github service hook. In your repository on Github, go to Admin -> Service Hooks -> WebHook URLs. Add the url:
+
+```
+http://divergence.[your domain].com/update
+```
+
+Now, whenever you push code to your repository, divergence will automatically know and will update accordingly.
+
 ## Running
 
 To start divergence, simply run in the divergence directory you initialized:
