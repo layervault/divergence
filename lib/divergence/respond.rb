@@ -3,7 +3,7 @@ module Divergence
     # The main entry point for the application. This is caled
     # by Rack.
     def call(env)
-      @req = RequestParser.new(env, @g)
+      @req = RequestParser.new(env)
 
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
@@ -20,13 +20,13 @@ module Divergence
 
       # Ask our GitManager to prepare the directory
       # for the given branch.
-      result = @g.prepare_directory @req.branch
-      if result === false
+      begin
+        branch = @git.discover(@req.subdomain)
+        path = prepare(branch)
+        swap!(path) unless path.nil?
+      rescue
         return error!
       end
-
-      # And then perform the codebase swap
-      @g.swap!
 
       # We're finished, pass the request through.
       proxy(env)

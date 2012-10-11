@@ -1,22 +1,22 @@
 module Divergence
+  # Manages the configured Git repository
   class GitManager
     attr_reader :current_branch
 
-    def initialize(config)
-      @config = config
-      @app_path = config.app_path
-      @git_path = config.git_path
+    def initialize(git_path)
+      @git_path = git_path
 
       @log = Logger.new('./log/git.log')
       @git = Git.open(@git_path, :log => @log)
 
       @current_branch = @git.branch
-      @new_branch = false
     end
 
-    def prepare_directory(branch, force=false)
-      return if is_current?(branch) and !force
+    def switch(branch, force=false)
+      return @git_path if is_current?(branch) and !force
+      
       pull branch
+      return @git_path
     end
 
     # Performs the swap between the git directory and the working
