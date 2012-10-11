@@ -23,9 +23,13 @@ module Divergence
       begin
         branch = @git.discover(@req.subdomain)
         path = prepare(branch)
-        swap!(path) unless path.nil?
-      rescue
-        return error!
+        
+        link!(path) unless path.nil?
+        @active_branch = branch
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.first
+        return error!(branch)
       end
 
       # We're finished, pass the request through.
@@ -56,8 +60,8 @@ module Divergence
       env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
     end
 
-    def error!
-      Application.log.error "Branch #{@req.branch} does not exist"
+    def error!(branch)
+      Application.log.error "Branch #{branch} does not exist"
       Application.log.error @req.raw
 
       public_path = File.expand_path('../../../public', __FILE__)

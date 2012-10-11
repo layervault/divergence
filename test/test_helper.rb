@@ -3,6 +3,7 @@ require "rack"
 require "rack/test"
 
 require "./lib/divergence"
+require "./test/config"
 
 Test::Unit::TestCase.class_eval do
   include Rack::Test::Methods
@@ -21,6 +22,7 @@ class Test::Unit::TestCase
     git = Git.open('test/git_root')
     git.reset_hard('HEAD')
     git.checkout branch.to_s, :force => true
+    app.active_branch = branch.to_s
   end
 
   # We have to rewrite the host constant in rack-test
@@ -34,8 +36,7 @@ class Test::Unit::TestCase
 
   def set_mock_request(addr, opts={})
     req = Rack::MockRequest.env_for "http://#{addr}", opts
-    git = Divergence::GitManager.new(Divergence::Application.config)
-    app.req = Divergence::RequestParser.new(req, git)
+    app.req = Divergence::RequestParser.new(req)
   end
 
   def mock_get(addr, params={})
@@ -63,7 +64,7 @@ end
 
 module Divergence
   class Application < Rack::Proxy
-    attr_accessor :req
+    attr_accessor :req, :active_branch
 
     def perform_request(env)
       [200, {"Content-Type" => "text/html"}, ["Ohai"]]

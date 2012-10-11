@@ -17,5 +17,6 @@ class ConfigureTest < Test::Unit::TestCase
 
     assert app.config.app_path, app_path
     assert app.config.git_path, git_path
+    assert app.config.cache_path, cache_path
   end
 end

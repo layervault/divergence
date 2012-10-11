@@ -5,7 +5,7 @@ module Divergence
       @cache_num = cache_num
 
       Dir.chdir @cache_path do
-        @cached_branches = Dir['*/'].map {|dir| dir.sub('/', '')}
+        @cached_branches = Dir['*/'].map {|dir| dir.gsub('/', '')}
       end
     end
 
@@ -18,22 +18,32 @@ module Divergence
 
       prune_cache!
 
-      @config.callback :before_cache, src_path, :branch => branch
-      `rsync -a --delete --exclude=.git #{src_path}/* #{path(branch)}`
-      @config.callback :after_cache, path(branch), :branch => branch
-    end
+      Application.config.callback :before_cache, src_path, :branch => branch
 
-    private
+      FileUtils.mkdir_p path(branch)
+      `rsync -a --delete --exclude=.git #{src_path}/* #{path(branch)}`
+
+      Application.config.callback :after_cache, path(branch), :branch => branch
+    end
 
     def path(branch)
       "#{@cache_path}/#{branch}"
     end
 
+    private
+
+    # Delete the oldest cached branches to make room for new
     def prune_cache!
       Dir.chdir @cache_path do
-        Dir['*/']
+        branches = Dir.glob('*/')
+        return if branches.nil? or branches.length <= @cache_num
+
+        branches
           .sort_by {|f| File.mtime(f)}[@cache_num..-1]
-          .each {|dir| FileUtils.rm_rf(dir)}
+          .each do|dir|
+            FileUtils.rm_rf(dir)
+            @cached_branches.delete(dir.gsub('/', ''))
+          end
       end
     end
   end

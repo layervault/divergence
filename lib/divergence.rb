@@ -7,7 +7,7 @@ require "fileutils"
 require "rack_ssl_hack"
 require "divergence/version"
 require "divergence/config"
-require "divergence/app_manager"
+require "divergence/application"
 require "divergence/git_manager"
 require "divergence/cache_manager"
 require "divergence/helpers"
@@ -47,10 +47,6 @@ module Divergence
     private
 
     def file_checks
-      unless File.exists?(config.app_path)
-        raise "Configured path not found: #{config.app_path}"
-      end
-
       unless File.exists?(config.git_path)
         raise "Configured git path not found: #{config.git_path}"
       end

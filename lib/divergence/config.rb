@@ -23,17 +23,17 @@ module Divergence
     # Might get rid of realpath in the future because it
     # resolves symlinks and that could be problematic
     # with capistrano in case someone accidentally deploys.
-    def app_path=(p)
-      @app_path = File.realpath(p)
-    end
+    #def app_path=(p)
+    #  @app_path = File.realpath(p)
+    #end
 
-    def git_path=(p)
-      @git_path = File.realpath(p)
-    end
+    #def git_path=(p)
+    #  @git_path = File.realpath(p)
+    #end
 
-    def cache_path=(p)
-      @cache_path = File.realpath(p)
-    end
+    #def cache_path=(p)
+    #  @cache_path = File.realpath(p)
+    #end
 
     # Lets a user define a callback for a specific event
     def callbacks(name, &block)
@@ -49,7 +49,9 @@ module Divergence
 
       Application.log.debug "Execute callback: #{name.to_s}"
 
-      run_path = Dir.pwd if run_path.nil?
+      if run_path.nil? or !File.exists?(run_path)
+        run_path = Dir.pwd
+      end
 
       Dir.chdir run_path do
         @callback_store[name].each do |cb|

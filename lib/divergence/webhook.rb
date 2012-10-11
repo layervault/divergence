@@ -8,12 +8,12 @@ module Divergence
 
       # If the webhook is for the currently active branch,
       # then we perform a pull and a swap.
-      if git.is_current?(branch)
+      if false
         Application.log.info "Webhook: updating #{branch}"
 
         git.prepare_directory(branch, true)
         git.swap!
-        
+
         ok
       else
         ignore

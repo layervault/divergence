@@ -8,9 +8,9 @@ Gem::Specification.new do |gem|
   gem.version       = Divergence::VERSION
   gem.authors       = ["Ryan LeFevre"]
   gem.email         = ["ryan@layervault.com"]
-  gem.description   = "Divergence is a Rack application that acts as a HTTP proxy between your web server and your web application. It uses virtual hosts to switch live codebases on the fly by mapping subdomains to git branches. Divergence is primarily for application testing purposes."
+  gem.description   = "Map subdomains to git branches for switching live codebases on the fly. It's a Rack application that acts as a HTTP proxy between you and your web application for rapid testing."
   gem.summary       = "Map virtual host subdomains to git branches for testing"
-  gem.homepage      = ""
+  gem.homepage      = "http://cosmos.layervault.com/divergence.html"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

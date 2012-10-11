@@ -19,30 +19,6 @@ module Divergence
       return @git_path
     end
 
-    # Performs the swap between the git directory and the working
-    # app directory. We want to copy the files without copying
-    # the .git directory, but this is a temporary dumb solution.
-    #
-    # Future idea: try the capistrano route and simply symlink
-    # to the git directory instead of copying files.
-    #
-    # TODO: make this more ruby-like.
-    def swap!
-      return unless @new_branch
-
-      Dir.chdir @config.git_path do
-        @config.callback :before_swap
-      end
-
-      Application.log.info "Swap: #{@git_path} -> #{@app_path}"
-      `rsync -a --delete --exclude=.git #{@git_path}/* #{@app_path}`
-      @new_branch = false
-
-      Dir.chdir @config.app_path do
-        @config.callback :after_swap
-      end
-    end
-
     # Since underscores are technically not allowed in URLs,
     # but they are allowed in Git branch names, we have to do
     # some magic to possibly convert dashes to underscores
@@ -56,7 +32,7 @@ module Divergence
       return branch if is_branch?(branch)
 
       Dir.chdir @git_path do
-        resp = @config.callback :on_branch_discover, branch
+        resp = Application.config.callback :on_branch_discover, branch
 
         unless resp.nil?
           return resp
@@ -100,9 +76,7 @@ module Divergence
 
     def pull(branch)
       if checkout(branch)
-        Dir.chdir @config.git_path do
-          @config.callback :before_pull
-        end
+        Application.config.callback :before_pull, @git_path
 
         #@git.pull 'origin', branch
         @git.chdir do
@@ -113,13 +87,9 @@ module Divergence
           `git pull origin #{branch} 2>&1`
         end
 
-        Dir.chdir @config.git_path do
-          @config.callback :after_pull
-        end
+        Application.config.callback :after_pull, @git_path
       else
-        Dir.chdir @config.git_path do
-          @config.callback :on_pull_error
-        end
+        Application.config.callback :on_pull_error, @git_path
 
         return false
       end
