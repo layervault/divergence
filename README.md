@@ -1,6 +1,6 @@
 # Divergence
 
-Divergence is a Rack application that acts as a HTTP proxy between you and your web application. It maps subdomains to git branches for switching live codebases on the fly. Divergence is primarily designed for application testing purposes.
+Map subdomains to git branches for switching live codebases on the fly. It's a Rack application that acts as a HTTP proxy between you and your web application for rapid testing.
 
 ## Installation
 
@@ -105,3 +105,7 @@ Divergence currently does not support HTTPS on its own; however, you can still u
 ## Authors
 
 * [Ryan LeFevre](http://meltingice.net) - Project Creator
+
+## License
+
+Licensed under the Apache 2.0 License. See LICENSE for details.
