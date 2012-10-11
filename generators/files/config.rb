@@ -1,4 +1,4 @@
-require './callbacks'
+require File.expand_path('../callbacks', __FILE__)
 
 Divergence::Application.configure do |config|
   config.git_path = nil # Change this to the git repository path
