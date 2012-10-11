@@ -18,14 +18,6 @@ divergence init
 
 This copies all of the necessary files into the current folder for you.
 
-If you are using rackup for your actual web application, you will want to add one line to your config.ru:
-
-``` ruby
-use Rack::Reloader unless ENV['RACK_ENV'] == 'production'
-```
-
-This prevents issues when switching the entire codebase around.
-
 ## Config
 
 All configuration happens in `config/config.rb`. You must set the git repository root and the application root before using divergence.
