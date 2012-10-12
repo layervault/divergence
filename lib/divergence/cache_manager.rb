@@ -21,7 +21,8 @@ module Divergence
       Application.config.callback :before_cache, src_path, :branch => branch
 
       FileUtils.mkdir_p path(branch)
-      `rsync -a --delete --exclude=.git #{src_path}/* #{path(branch)}`
+      `rsync -a --delete #{src_path}/* #{path(branch)}`
+      @cached_branches.push branch
 
       Application.config.callback :after_cache, path(branch), :branch => branch
     end

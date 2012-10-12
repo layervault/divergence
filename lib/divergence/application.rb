@@ -16,7 +16,7 @@ module Divergence
       Application.log.info "Link: #{path} -> #{config.app_path}"
 
       config.callback :before_swap, path
-      FileUtils.rm config.app_path
+      FileUtils.rm config.app_path if File.exists?(config.app_path)
       FileUtils.ln_s path, config.app_path, :force => true
       config.callback :after_swap, config.app_path
     end

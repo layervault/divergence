@@ -5,6 +5,8 @@ require "rack/test"
 require "./lib/divergence"
 require "./test/config"
 
+#require 'debugger'; debugger
+
 Test::Unit::TestCase.class_eval do
   include Rack::Test::Methods
 end
@@ -18,11 +20,11 @@ class Test::Unit::TestCase
     @d
   end
 
-  def force_branch(branch)
-    git = Git.open('test/git_root')
-    git.reset_hard('HEAD')
-    git.checkout branch.to_s, :force => true
-    app.active_branch = branch.to_s
+  def active_branch
+    file = File.open 'test/app_root/test.txt'
+    contents = file.read.strip
+    file.close
+    contents
   end
 
   # We have to rewrite the host constant in rack-test

@@ -26,9 +26,7 @@ module Divergence
         
         link!(path) unless path.nil?
         @active_branch = branch
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace.first
+      rescue
         return error!(branch)
       end
 

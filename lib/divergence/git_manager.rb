@@ -9,7 +9,7 @@ module Divergence
       @log = Logger.new('./log/git.log')
       @git = Git.open(@git_path, :log => @log)
 
-      @current_branch = @git.branch
+      @current_branch = @git.current_branch
     end
 
     def switch(branch, force=false)
@@ -102,7 +102,6 @@ module Divergence
       begin
         @git.checkout branch, :force => true
         @current_branch = branch
-        @new_branch = true
       rescue
         return false
       end
