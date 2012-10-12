@@ -97,8 +97,9 @@ Divergence currently does not support HTTPS on its own; however, you can still u
 
 ## TODO
 
-* Handle multiple users at the same time
-* Build-in HTTPS support
+* Handle simultaneous users better
+* Built-in HTTPS support
+* Helpers for more frameworks
 
 ## Contributing
 
