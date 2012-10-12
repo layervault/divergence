@@ -1,6 +1,6 @@
 module Divergence
   class Application < Rack::Proxy
-    # The main entry point for the application. This is caled
+    # The main entry point for the application. This is called
     # by Rack.
     def call(env)
       @req = RequestParser.new(env)
