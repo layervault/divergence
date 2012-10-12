@@ -2,6 +2,7 @@ module Divergence
   # Responsible for managing the cache folders and swapping
   # the codebases around.
   class Application < Rack::Proxy
+    # Prepares the filesystem for loading up a branch
     def prepare(branch)
       return nil if branch == @active_branch
 
@@ -12,6 +13,8 @@ module Divergence
       @cache.path(branch)
     end
 
+    # Links the application directory to the given path,
+    # which is always a cache directory in our case.
     def link!(path)
       Application.log.info "Link: #{path} -> #{config.app_path}"
 

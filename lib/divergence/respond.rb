@@ -18,13 +18,19 @@ module Divergence
         return handle_webhook
       end
 
-      # Ask our GitManager to prepare the directory
-      # for the given branch.
+      # Lets get down to business.
       begin
+        # Get the proper branch name using a touch of magic
         branch = @git.discover(@req.subdomain)
+
+        # Prepare the branch and cache if needed
         path = prepare(branch)
         
+        # If we're requesting a different branch than the
+        # one currently loaded, we'll need to link it to
+        # the application directory.
         link!(path) unless path.nil?
+        
         @active_branch = branch
       rescue
         return error!(branch)

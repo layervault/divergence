@@ -30,8 +30,12 @@ Divergence lets you hook into various callbacks throughout the entire process. T
 
 The available callbacks are:
 
-* before_swap
+* before_cache
   * Active dir: git repository
+* after_cache
+  * Active dir: cached folder path
+* before_swap
+  * Active dir: cached folder path
 * after_swap
   * Active dir: application
 * before_pull
@@ -51,7 +55,9 @@ The available callbacks are:
 There are also some built-in helper methods that are available inside callbacks. They are:
 
 * bundle_install
+  * Recommended - after_cache
 * restart_passenger
+  * Recommended - after_swap
 
 ### Github Service Hook
 
