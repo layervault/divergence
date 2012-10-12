@@ -15,7 +15,7 @@ module Divergence
       # Handle webhooks from Github for updating the current
       # branch if necessary.
       if @req.is_webhook?
-        return Webhook.handle @g, @req
+        return handle_webhook
       end
 
       # Ask our GitManager to prepare the directory
