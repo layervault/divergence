@@ -33,7 +33,7 @@ module Divergence
     end
 
     def initialize
-      file_checks
+      config.ok?
 
       @git = GitManager.new(config.git_path)
       @cache = CacheManager.new(config.cache_path, config.cache_num)
@@ -42,18 +42,6 @@ module Divergence
 
     def config
       @@config
-    end
-
-    private
-
-    def file_checks
-      unless File.exists?(config.git_path)
-        raise "Configured git path not found: #{config.git_path}"
-      end
-
-      unless File.exists?(config.cache_path)
-        FileUtils.mkdir_p config.cache_path
-      end
     end
   end
 end

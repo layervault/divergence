@@ -20,20 +20,21 @@ module Divergence
       @helpers = Divergence::Helpers.new(self)
     end
 
-    # Might get rid of realpath in the future because it
-    # resolves symlinks and that could be problematic
-    # with capistrano in case someone accidentally deploys.
-    #def app_path=(p)
-    #  @app_path = File.realpath(p)
-    #end
+    def ok?
+      [:git_path, :app_path, :cache_path].each do |path|
+        if instance_variable_get("@#{path}").nil?
+          raise "Configure #{path} before running"
+        end
+      end
 
-    #def git_path=(p)
-    #  @git_path = File.realpath(p)
-    #end
+      unless File.exists?(@git_path)
+        raise "Configured git path not found: #{@git_path}"
+      end
 
-    #def cache_path=(p)
-    #  @cache_path = File.realpath(p)
-    #end
+      unless File.exists?(@cache_path)
+        FileUtils.mkdir_p @cache_path
+      end
+    end
 
     # Lets a user define a callback for a specific event
     def callbacks(name, &block)
