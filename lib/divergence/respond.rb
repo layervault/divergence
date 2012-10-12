@@ -3,7 +3,7 @@ module Divergence
     # The main entry point for the application. This is caled
     # by Rack.
     def call(env)
-      @req = RequestParser.new(env, @g)
+      @req = RequestParser.new(env)
 
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
@@ -15,18 +15,20 @@ module Divergence
       # Handle webhooks from Github for updating the current
       # branch if necessary.
       if @req.is_webhook?
-        return Webhook.handle @g, @req
+        return handle_webhook
       end
 
       # Ask our GitManager to prepare the directory
       # for the given branch.
-      result = @g.prepare_directory @req.branch
-      if result === false
-        return error!
+      begin
+        branch = @git.discover(@req.subdomain)
+        path = prepare(branch)
+        
+        link!(path) unless path.nil?
+        @active_branch = branch
+      rescue
+        return error!(branch)
       end
-
-      # And then perform the codebase swap
-      @g.swap!
 
       # We're finished, pass the request through.
       proxy(env)
@@ -56,8 +58,8 @@ module Divergence
       env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
     end
 
-    def error!
-      Application.log.error "Branch #{@req.branch} does not exist"
+    def error!(branch)
+      Application.log.error "Branch #{branch} does not exist"
       Application.log.error @req.raw
 
       public_path = File.expand_path('../../../public', __FILE__)

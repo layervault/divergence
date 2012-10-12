@@ -1,46 +1,22 @@
 module Divergence
+  # Manages the configured Git repository
   class GitManager
     attr_reader :current_branch
 
-    def initialize(config)
-      @config = config
-      @app_path = config.app_path
-      @git_path = config.git_path
+    def initialize(git_path)
+      @git_path = git_path
 
       @log = Logger.new('./log/git.log')
       @git = Git.open(@git_path, :log => @log)
 
-      @current_branch = @git.branch
-      @new_branch = false
+      @current_branch = @git.current_branch
     end
 
-    def prepare_directory(branch, force=false)
-      return if is_current?(branch) and !force
+    def switch(branch, force=false)
+      return @git_path if is_current?(branch) and !force
+      
       pull branch
-    end
-
-    # Performs the swap between the git directory and the working
-    # app directory. We want to copy the files without copying
-    # the .git directory, but this is a temporary dumb solution.
-    #
-    # Future idea: try the capistrano route and simply symlink
-    # to the git directory instead of copying files.
-    #
-    # TODO: make this more ruby-like.
-    def swap!
-      return unless @new_branch
-
-      Dir.chdir @config.git_path do
-        @config.callback :before_swap
-      end
-
-      Application.log.info "Swap: #{@git_path} -> #{@app_path}"
-      `rsync -a --delete --exclude=.git #{@git_path}/* #{@app_path}`
-      @new_branch = false
-
-      Dir.chdir @config.app_path do
-        @config.callback :after_swap
-      end
+      return @git_path
     end
 
     # Since underscores are technically not allowed in URLs,
@@ -56,7 +32,7 @@ module Divergence
       return branch if is_branch?(branch)
 
       Dir.chdir @git_path do
-        resp = @config.callback :on_branch_discover, branch
+        resp = Application.config.callback :on_branch_discover, branch
 
         unless resp.nil?
           return resp
@@ -100,9 +76,7 @@ module Divergence
 
     def pull(branch)
       if checkout(branch)
-        Dir.chdir @config.git_path do
-          @config.callback :before_pull
-        end
+        Application.config.callback :before_pull, @git_path
 
         #@git.pull 'origin', branch
         @git.chdir do
@@ -113,13 +87,9 @@ module Divergence
           `git pull origin #{branch} 2>&1`
         end
 
-        Dir.chdir @config.git_path do
-          @config.callback :after_pull
-        end
+        Application.config.callback :after_pull, @git_path
       else
-        Dir.chdir @config.git_path do
-          @config.callback :on_pull_error
-        end
+        Application.config.callback :on_pull_error, @git_path
 
         return false
       end
@@ -132,7 +102,6 @@ module Divergence
       begin
         @git.checkout branch, :force => true
         @current_branch = branch
-        @new_branch = true
       rescue
         return false
       end

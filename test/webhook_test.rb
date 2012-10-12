@@ -2,7 +2,7 @@ require 'test_helper'
 
 class WebhookTest < Test::Unit::TestCase
   def test_detect
-    force_branch :master
+    mock_get "master.example.com"
     status, _, body = mock_webhook :master
 
     assert_equal 200, status
@@ -10,8 +10,7 @@ class WebhookTest < Test::Unit::TestCase
   end
 
   def test_ignore
-    force_branch :master
-    status, _, body = mock_webhook :branch1
+    status, _, body = mock_webhook 'webhook-ignore'
 
     assert_equal 200, status
     assert_equal ["IGNORE"], body

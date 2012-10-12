@@ -1,30 +1,28 @@
 module Divergence
-  class Webhook
-    def self.handle(git, req)
-      hook = JSON.parse(req['payload'])
+  class Application
+    def handle_webhook
+      hook = JSON.parse(@req['payload'])
       branch = hook["ref"].split("/").last.strip
 
       Application.log.info "Webhook: received for #{branch} branch"
 
       # If the webhook is for the currently active branch,
       # then we perform a pull and a swap.
-      if git.is_current?(branch)
+      if @cache.is_cached?(branch)
         Application.log.info "Webhook: updating #{branch}"
-
-        git.prepare_directory(branch, true)
-        git.swap!
-        
+        prepare(branch)
         ok
       else
+        Application.log.info "Webhook: ignoring #{branch}"
         ignore
       end
     end
 
-    def self.ok
+    def ok
       [200, {"Content-Type" => "text/html"}, ["OK"]]
     end
 
-    def self.ignore
+    def ignore
       [200, {"Content-Type" => "text/html"}, ["IGNORE"]]
     end
   end

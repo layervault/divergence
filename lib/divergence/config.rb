@@ -2,12 +2,17 @@ module Divergence
   class Configuration
     include Enumerable
 
-    attr_accessor :app_path, :git_path
+    attr_accessor :app_path, :git_path, :cache_path
+    attr_accessor :cache_num
     attr_accessor :forward_host, :forward_port
 
     def initialize
       @git_path = nil
       @app_path = nil
+      @cache_path = nil
+
+      @cache_num = 5
+
       @forward_host = 'localhost'
       @forward_port = 80
 
@@ -15,15 +20,20 @@ module Divergence
       @helpers = Divergence::Helpers.new(self)
     end
 
-    # Might get rid of realpath in the future because it
-    # resolves symlinks and that could be problematic
-    # with capistrano in case someone accidentally deploys.
-    def app_path=(p)
-      @app_path = File.realpath(p)
-    end
+    def ok?
+      [:git_path, :app_path, :cache_path].each do |path|
+        if instance_variable_get("@#{path}").nil?
+          raise "Configure #{path} before running"
+        end
+      end
 
-    def git_path=(p)
-      @git_path = File.realpath(p)
+      unless File.exists?(@git_path)
+        raise "Configured git path not found: #{@git_path}"
+      end
+
+      unless File.exists?(@cache_path)
+        FileUtils.mkdir_p @cache_path
+      end
     end
 
     # Lets a user define a callback for a specific event
@@ -35,13 +45,19 @@ module Divergence
       @callback_store[name].push block
     end
 
-    def callback(name, args = {})
+    def callback(name, run_path=nil, args = {})
       return unless @callback_store.has_key?(name)
 
       Application.log.debug "Execute callback: #{name.to_s}"
 
-      @callback_store[name].each do |cb|
-        @helpers.execute cb, args
+      if run_path.nil? or !File.exists?(run_path)
+        run_path = Dir.pwd
+      end
+
+      Dir.chdir run_path do
+        @callback_store[name].each do |cb|
+          @helpers.execute cb, args
+        end
       end
     end
 

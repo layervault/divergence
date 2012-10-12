@@ -1,8 +1,7 @@
 module Divergence
   class RequestParser
-    def initialize(env, git)
+    def initialize(env)
       @req = Rack::Request.new(env)
-      @git = git
     end
 
     def raw
