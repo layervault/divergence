@@ -37,12 +37,14 @@ module Divergence
     end
 
     # Lets a user define a callback for a specific event
-    def callbacks(name, &block)
-      unless @callback_store.has_key?(name)
-        @callback_store[name] = []
-      end
+    def callbacks(*names, &block)
+      names.each do |name|
+        unless @callback_store.has_key?(name)
+          @callback_store[name] = []
+        end
 
-      @callback_store[name].push block
+        @callback_store[name].push block
+      end
     end
 
     def callback(name, run_path=nil, args = {})

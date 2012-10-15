@@ -3,7 +3,7 @@ module Divergence
   # the codebases around.
   class Application < Rack::Proxy
     # Prepares the filesystem for loading up a branch
-    def prepare(branch)
+    def prepare(branch, opts = {})
       return nil if branch == @active_branch
 
       unless @cache.is_cached?(branch)

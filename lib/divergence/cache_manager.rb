@@ -21,10 +21,14 @@ module Divergence
       Application.config.callback :before_cache, src_path, :branch => branch
 
       FileUtils.mkdir_p path(branch)
-      `rsync -a --delete #{src_path}/* #{path(branch)}`
+      sync branch, src_path
       @cached_branches.push branch
 
       Application.config.callback :after_cache, path(branch), :branch => branch
+    end
+
+    def sync(branch, src_path)
+      `rsync -a --delete #{src_path}/* #{path(branch)}`
     end
 
     def path(branch)
