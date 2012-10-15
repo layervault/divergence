@@ -14,8 +14,8 @@ module Divergence
         git_path = @git.switch(branch)
 
         config.callback :before_webhook, git_path, :branch => branch
-        cache_path = @cache.sync branch, git_path
-        config.callback :after_webhook, cache_path, :branch => branch
+        @cache.sync branch, git_path
+        config.callback :after_webhook, @cache.path(branch), :branch => branch
 
         ok
       else
