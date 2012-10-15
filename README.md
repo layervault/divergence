@@ -24,6 +24,27 @@ All configuration happens in `config/config.rb`. You must set the git repository
 
 You will probably want divergence to take over port 80 on your testing server, so you may have to update the forwarding host/port. Note, this is the address where your actual web application can be reached.
 
+A sample config could look like this:
+
+``` ruby
+Divergence::Application.configure do |config|
+  config.git_path = "/path/to/git_root"
+  config.app_path = "/path/to/app_root"
+  config.cache_path = "/path/to/cache_root"
+
+  config.forward_host = 'localhost'
+  config.forward_port = 80
+
+  config.callbacks :after_swap do
+    restart_passenger
+  end
+
+  config.callbacks :after_cache, :after_webhook do
+    bundle_install
+  end
+end
+```
+
 ### Callbacks
 
 Divergence lets you hook into various callbacks throughout the entire process. These are defined in `config/callbacks.rb`. Most callbacks automatically change the current working directory for you in order to make modifications as simple as possible.
@@ -51,6 +72,12 @@ The available callbacks are:
   * Active dir: git repository
   * Executes if the subdomain has a dash in the name. The subdomain name is passed to the callback in the options hash.
   * If the callback returns nil, Divergence will try to auto-detect the branch name, otherwise it will use whatever you return.
+* before_webook
+  * Active dir: git repository
+  * Runs before a branch is updated via webhooks.
+* after_webhook
+  * Active dir: cached folder path
+  * Runs after a webhook update completes
 
 There are also some built-in helper methods that are available inside callbacks. They are:
 
