@@ -11,7 +11,7 @@ module Divergence
       if @cache.is_cached?(branch)
         Application.log.info "Webhook: updating #{branch}"
 
-        git_path = @git.switch(branch)
+        git_path = @git.switch branch, :force => true
 
         config.callback :before_webhook, git_path, :branch => branch
         @cache.sync branch, git_path
