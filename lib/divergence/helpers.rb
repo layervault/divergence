@@ -14,9 +14,9 @@ module Divergence
 
     def bundle_install
       Application.log.debug "bundle install"
-      
+
       Dir.chdir @config.app_path do
-        `bundle install`
+        `bundle install --deployment`
       end
     end
 
