@@ -10,7 +10,13 @@ module Divergence
       # then we perform a pull and a swap.
       if @cache.is_cached?(branch)
         Application.log.info "Webhook: updating #{branch}"
-        prepare(branch)
+
+        git_path = @git.switch(branch)
+
+        config.callback :before_webhook, git_path, :branch => branch
+        cache_path = @cache.sync branch, git_path
+        config.callback :after_webhook, cache_path, :branch => branch
+
         ok
       else
         Application.log.info "Webhook: ignoring #{branch}"

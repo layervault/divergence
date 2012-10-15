@@ -15,19 +15,22 @@ module Divergence
     def bundle_install
       Application.log.debug "bundle install"
 
-      Dir.chdir @config.app_path do
-        `bundle install --deployment`
+      begin
+        `bundle install --deployment --without development test`
+      rescue
       end
     end
 
     def restart_passenger
       Application.log.debug "Restarting passenger..."
 
-      Dir.chdir @config.app_path do
-        begin
-          FileUtils.touch 'tmp/restart.txt'
-        rescue
+      begin
+        unless File.exists? 'tmp'
+          FileUtils.mkdir_p 'tmp'
         end
+
+        FileUtils.touch 'tmp/restart.txt'
+      rescue
       end
     end
   end

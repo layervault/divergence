@@ -6,7 +6,7 @@ Divergence::Application.configure do |config|
   config.forward_host = 'localhost'
   config.forward_port = 80
 
-  config.callbacks :after_swap do
+  config.callbacks :after_swap, :after_webhook do
     # Run anything after the swap finishes
   end
 end
