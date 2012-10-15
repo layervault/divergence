@@ -42,6 +42,15 @@ Divergence::Application.configure do |config|
   config.callbacks :after_cache, :after_webhook do
     bundle_install
   end
+
+  config.callbacks :on_branch_discover do |subdomain|
+    case subdomain
+    when "release-1"
+      "test_branch"
+    when "release-2"
+      "other_branch"
+    end
+  end
 end
 ```
 
