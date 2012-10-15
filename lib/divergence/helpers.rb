@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Divergence
   class Helpers
     def initialize(config)
