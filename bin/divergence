@@ -16,6 +16,7 @@ module CLI
     def create_directories
       empty_directory "config"
       empty_directory "log"
+      empty_directory "tmp"
     end
 
     def copy_templates
@@ -36,8 +37,19 @@ module CLI
       cmd = 'rackup'
       cmd << " -p #{options[:port]}" if options[:port]
       cmd << " -D" unless options[:dev]
+      cmd << " -P tmp/rack.pid"
       
       exec cmd
+
+      unless options[:dev]
+        puts "Divergence is now running"
+      end
+    end
+
+    desc "stop", "Stop divergence"
+    def stop
+      `kill -9 $(cat tmp/rack.pid) && rm tmp/rack.pid`
+      puts "Divergence halted"
     end
   end
 end
