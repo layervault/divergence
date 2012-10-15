@@ -18,6 +18,7 @@ module Divergence
       begin
         `bundle install --deployment --without development test`
       rescue
+        Application.log.debug "bundle install failed!"
       end
     end
 
