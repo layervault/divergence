@@ -18,3 +18,4 @@ tmp
 log/*.log
 .DS_Store
 test/app_root
+test/cache_root

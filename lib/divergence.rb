@@ -1,5 +1,4 @@
 require "rack/proxy"
-require "git"
 require "json"
 require "logger"
 require "fileutils"

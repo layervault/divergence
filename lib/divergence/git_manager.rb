@@ -5,11 +5,8 @@ module Divergence
 
     def initialize(git_path)
       @git_path = git_path
-
       @log = Logger.new('./log/git.log')
-      @git = Git.open(@git_path, :log => @log)
-
-      @current_branch = @git.current_branch
+      @current_branch = current_branch
     end
 
     def switch(branch, force=false)
@@ -55,6 +52,14 @@ module Divergence
 
     private
 
+    def current_branch
+      git('branch -a').split("\n").each do |b|
+        if b[0, 2] == '* '
+          return b.gsub('* ', '').strip
+        end
+      end
+    end
+
     def is_branch?(branch)
       Dir.chdir @git_path do
         # This is fast, but only works on locally checked out branches
@@ -84,7 +89,6 @@ module Divergence
       reset
       
       begin
-        #@git.checkout branch, :force => true
         git "checkout -f #{branch}"
         @current_branch = branch
       rescue
@@ -93,25 +97,25 @@ module Divergence
     end
 
     def reset
-      #@git.reset_hard('HEAD')
       git 'reset --hard'
     end
 
     # Fetch all remote branch information
     def fetch
-      #@git.fetch
       git :fetch
     end
 
     def git(cmd)
       Dir.chdir @git_path do
         @log.info "git #{cmd.to_s}"
+        out = `git #{cmd.to_s} 2>&1`
 
-        begin
-          return `git #{cmd.to_s}`
-        rescue
+        if $?.exitstatus != 0
           Application.log.error "git #{cmd.to_s} failed"
+          Application.log.error out
         end
+
+        return out
       end
     end
   end
