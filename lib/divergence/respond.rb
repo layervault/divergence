@@ -32,7 +32,8 @@ module Divergence
         link!(path) unless path.nil?
         
         @active_branch = branch
-      rescue
+      rescue Exception => e
+        Application.log.error e.message
         return error!(branch)
       end
 

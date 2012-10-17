@@ -40,7 +40,7 @@ Divergence::Application.configure do |config|
   end
 
   config.callbacks :after_cache, :after_webhook do
-    bundle_install
+    bundle_install :path => "vendor/bundle"
   end
 
   config.callbacks :on_branch_discover do |subdomain|
@@ -91,7 +91,10 @@ The available callbacks are:
 There are also some built-in helper methods that are available inside callbacks. They are:
 
 * bundle_install
-  * Recommended - after_cache
+  * Recommended - after_cache, after_webhook
+  * Options:
+    * :deployment => boolean
+    * :path => string
 * restart_passenger
   * Recommended - after_swap
 

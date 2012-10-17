@@ -10,14 +10,19 @@ module Divergence
 
     private
 
-    def bundle_install
+    def bundle_install(opts={})
       Application.log.debug "bundle install"
 
       begin
-        result = `bundle install --deployment --without development test`
+        cmd = 'bundle install'
+        cmd << ' --deployment' if opts[:deployment]
+        cmd << " --path #{opts[:path]}" if opts[:path]
+        cmd << ' --without development test'
+        result = `#{cmd}`
         Application.log.debug result
       rescue
-        Application.log.debug "bundle install failed!"
+        Application.log.error "bundle install failed!"
+        Application.log.error e.message
       end
     end
 
