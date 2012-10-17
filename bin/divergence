@@ -34,16 +34,14 @@ module CLI
     desc "start", "Start divergence"
     method_options :port => :number, :dev => :boolean
     def start
+
       cmd = 'rackup'
       cmd << " -p #{options[:port]}" if options[:port]
       cmd << " -D" unless options[:dev]
       cmd << " -P tmp/rack.pid"
       
+      puts "Divergence started"
       exec cmd
-
-      unless options[:dev]
-        puts "Divergence is now running"
-      end
     end
 
     desc "stop", "Stop divergence"
