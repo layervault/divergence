@@ -18,6 +18,10 @@ divergence init
 
 This copies all of the necessary files into the current folder for you.
 
+### DNS
+
+You have to do this manually for now. Hopefully in the future, Divergence will be able to automatically handle the DNS setup. All you need to do is create an A record with a wildcard subdomain that points to your testing server IP.
+
 ## Config
 
 All configuration happens in `config/config.rb`. You must set the git repository root and the application root before using divergence.
