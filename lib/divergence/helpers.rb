@@ -14,7 +14,8 @@ module Divergence
       Application.log.debug "bundle install"
 
       begin
-        `bundle install --deployment --without development test`
+        result = `bundle install --deployment --without development test`
+        Application.log.debug result
       rescue
         Application.log.debug "bundle install failed!"
       end

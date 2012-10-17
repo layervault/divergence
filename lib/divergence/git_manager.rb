@@ -26,27 +26,25 @@ module Divergence
     def discover(branch)
       return branch if is_branch?(branch)
 
-      Dir.chdir @git_path do
-        resp = Application.config.callback :on_branch_discover, branch
+      resp = Application.config.callback :on_branch_discover, @git_path, branch
 
-        unless resp.nil?
-          return resp
-        end
-      
-        local_search = "^" + branch.gsub(/-/, ".") + "$"
-        remote_search = "^remotes/origin/(" + branch.gsub(/-/, ".") + ")$"
-        local_r = Regexp.new(local_search, Regexp::IGNORECASE)
-        remote_r = Regexp.new(remote_search, Regexp::IGNORECASE)
-
-        `git branch -a`.split("\n").each do |b|
-          b = b.gsub('*', '').strip
-          
-          return b if local_r.match(b)
-          if remote_r.match(b)
-            return remote_r.match(b)[1]
-          end
-        end
+      unless resp.nil?
+        return resp
       end
+    
+      local_search = "^" + branch.gsub(/-/, ".") + "$"
+      remote_search = "^remotes/origin/(" + branch.gsub(/-/, ".") + ")$"
+      local_r = Regexp.new(local_search, Regexp::IGNORECASE)
+      remote_r = Regexp.new(remote_search, Regexp::IGNORECASE)
+
+      git('branch -a').split("\n").each do |b|
+        b = b.gsub('*', '').strip
+        
+        return b if local_r.match(b)
+        if remote_r.match(b)
+          return remote_r.match(b)[1]
+        end
+      end 
 
       raise "Unable to automatically detect branch. Given = #{branch}"
     end
@@ -72,16 +70,7 @@ module Divergence
     def pull(branch)
       if checkout(branch)
         Application.config.callback :before_pull, @git_path
-
-        #@git.pull 'origin', branch
-        @git.chdir do
-          # For some reason, I'm having issues with the pull
-          # that's built into the library. Doing this manually
-          # for now.
-          @log.info "git pull origin #{branch} 2>&1"
-          `git pull origin #{branch} 2>&1`
-        end
-
+        git "pull origin #{branch}"
         Application.config.callback :after_pull, @git_path
       else
         Application.config.callback :on_pull_error, @git_path
@@ -95,7 +84,8 @@ module Divergence
       reset
       
       begin
-        @git.checkout branch, :force => true
+        #@git.checkout branch, :force => true
+        git "checkout -f #{branch}"
         @current_branch = branch
       rescue
         return false
@@ -103,12 +93,26 @@ module Divergence
     end
 
     def reset
-      @git.reset_hard('HEAD')
+      #@git.reset_hard('HEAD')
+      git 'reset --hard'
     end
 
     # Fetch all remote branch information
     def fetch
-      @git.fetch
+      #@git.fetch
+      git :fetch
+    end
+
+    def git(cmd)
+      Dir.chdir @git_path do
+        @log.info "git #{cmd.to_s}"
+
+        begin
+          return `git #{cmd.to_s}`
+        rescue
+          Application.log.error "git #{cmd.to_s} failed"
+        end
+      end
     end
   end
 end

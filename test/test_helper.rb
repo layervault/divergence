@@ -5,7 +5,7 @@ require "rack/test"
 require "./lib/divergence"
 require "./test/config"
 
-#require 'debugger'; debugger
+require 'debugger'; debugger
 
 Test::Unit::TestCase.class_eval do
   include Rack::Test::Methods

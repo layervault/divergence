@@ -1,3 +1,0 @@
-[submodule "test/git_root"]
-	path = test/git_root
-	url = git://github.com/layervault/divergence-test.git

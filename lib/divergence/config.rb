@@ -50,11 +50,11 @@ module Divergence
     def callback(name, run_path=nil, args = {})
       return unless @callback_store.has_key?(name)
 
-      Application.log.debug "Execute callback: #{name.to_s}"
-
       if run_path.nil? or !File.exists?(run_path)
         run_path = Dir.pwd
       end
+
+      Application.log.debug "Execute callback: #{name.to_s} in #{run_path}"
 
       Dir.chdir run_path do
         @callback_store[name].each do |cb|
