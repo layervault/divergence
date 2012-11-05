@@ -28,7 +28,7 @@ module Divergence
     end
 
     def sync(branch, src_path)
-      `rsync -a --delete #{src_path}/* #{path(branch)}`
+      `rsync -a --delete --exclude .git --exclude .gitignore #{src_path}/ #{path(branch)}`
     end
 
     def path(branch)
