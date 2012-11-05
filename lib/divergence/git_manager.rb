@@ -61,15 +61,13 @@ module Divergence
     end
 
     def is_branch?(branch)
-      Dir.chdir @git_path do
-        # This is fast, but only works on locally checked out branches
-        `git show-ref --verify --quiet 'refs/heads/#{branch}'`
-        return true if $?.exitstatus == 0
+      # This is fast, but only works on locally checked out branches
+      `git --git-dir #{@git_path}/.git  show-ref --verify --quiet 'refs/heads/#{branch}'`
+      return true if $?.exitstatus == 0
 
-        # This is slow and will only get called for remote branches.
-        result = `git ls-remote --heads origin 'refs/heads/#{branch}'`
-        return result.strip.length != 0
-      end
+      # This is slow and will only get called for remote branches.
+      result = `git --git-dir #{@git_path}/.git ls-remote --heads origin 'refs/heads/#{branch}'`
+      return result.strip.length != 0
     end
 
     def pull(branch)
@@ -106,17 +104,15 @@ module Divergence
     end
 
     def git(cmd)
-      Dir.chdir @git_path do
-        @log.info "git #{cmd.to_s}"
-        out = `git #{cmd.to_s} 2>&1`
+      @log.info "git --work-tree #{@git_path} --git-dir #{@git_path}/.git #{cmd.to_s}"
+      out = `git --work-tree #{@git_path} --git-dir #{@git_path}/.git #{cmd.to_s} 2>&1`
 
-        if $?.exitstatus != 0
-          Application.log.error "git #{cmd.to_s} failed"
-          Application.log.error out
-        end
-
-        return out
+      if $?.exitstatus != 0
+        Application.log.error "git --work-tree #{@git_path} --git-dir #{@git_path}/.git #{cmd.to_s} failed"
+        Application.log.error out
       end
+
+      return out
     end
   end
 end

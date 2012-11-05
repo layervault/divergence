@@ -28,7 +28,7 @@ module Divergence
     end
 
     def sync(branch, src_path)
-      `rsync -a --delete #{src_path}/* #{path(branch)}`
+      `rsync -a --delete --exclude .git --exclude .gitignore #{src_path}/ #{path(branch)}`
     end
 
     def path(branch)
@@ -43,8 +43,8 @@ module Divergence
         branches = Dir.glob('*/')
         return if branches.nil? or branches.length <= @cache_num
 
-        branches
-          .sort_by {|f| File.mtime(f)}[@cache_num..-1]
+        branches \
+          .sort_by {|f| File.mtime(f)}[@cache_num..-1] \
           .each do|dir|
             FileUtils.rm_rf(dir)
             @cached_branches.delete(dir.gsub('/', ''))
