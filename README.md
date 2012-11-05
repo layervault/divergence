@@ -138,6 +138,10 @@ Make sure, if you're using Git over SSH, that you have your repository's host ad
 
 Divergence currently does not support HTTPS on its own; however, you can still use HTTPS in combination with a load balancer if you enable SSL termination.
 
+### Invalid URL Characters
+
+Git supports a much wider range of characters for branch names than URLs support. To get around this limitation, simply replace any invalid URL character with a `-` and Divergence will find the branch you're looking for automatically.
+
 ## TODO
 
 * Handle simultaneous users better
