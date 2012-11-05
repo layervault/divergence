@@ -1,6 +1,8 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
 
+task :default => [:test]
+
 task :docs do
   `rdoc --main lib/divergence.rb lib`
 end
