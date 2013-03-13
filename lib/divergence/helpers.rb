@@ -38,5 +38,16 @@ module Divergence
       rescue
       end
     end
+
+    def restart_unicorn
+      Application.log.debug "Restarting unicorn..."
+      begin
+        unicorn_pid_file = File.join(config.app_path, "tmp/pids/unicorn.pid")
+        cmd = "cat #{unicorn_pid_file} | xargs kill -USR2"
+        result = `#{cmd}`
+        Application.log.debug result
+      rescue
+      end
+    end
   end
 end
