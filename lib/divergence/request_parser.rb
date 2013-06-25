@@ -1,7 +1,14 @@
 module Divergence
   class RequestParser
-    def initialize(env)
+
+    attr_accessor :called_site_subdomain
+
+    def initialize(env, config)
       @req = Rack::Request.new(env)
+      @config = config
+
+      @host_parts = @req.host.split(".")
+      @called_site_subdomain = nil
     end
 
     def raw
@@ -9,36 +16,24 @@ module Divergence
     end
 
     def is_webhook?
-      subdomain == "divergence" and 
+      @host_parts[0] == "divergence" and
       @req.env['PATH_INFO'] == "/update" and
       @req.post?
     end
 
-    def host_parts
-      @req.host.split(".")
-    end
-
     def has_subdomain?
-      host_parts.length > @config.incoming_base_uri_length
-    end
-
-    def subdomain
-      if has_subdomain?
-        host_parts.shift
-      else
-        nil
-      end
+      @host_parts.length > @config.incoming_base_uri_length
     end
 
     def branch
       if has_subdomain?
-        branch = subdomain
+        branch = @host_parts[0]
 
-        if branch['-']
-          @git.discover(branch)
-        else
-          branch
+        if @config.site_subdomains.include?(branch)
+          @called_site_subdomain = branch
+          branch = @host_parts[1]
         end
+        branch
       else
         nil
       end

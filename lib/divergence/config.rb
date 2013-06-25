@@ -5,6 +5,7 @@ module Divergence
     attr_accessor :app_path, :git_path, :cache_path
     attr_accessor :cache_num
     attr_accessor :forward_host, :forward_port
+    attr_accessor :site_subdomains
     attr_reader :incoming_base_uri_length
 
     def initialize
@@ -17,14 +18,15 @@ module Divergence
       @incoming_base_uri_length = 2
       @forward_host = 'localhost'
       @forward_port = 80
+      @site_subdomains = []
 
       @callback_store = {}
       @helpers = Divergence::Helpers.new(self)
     end
 
-    def incoming_base_uri=(base_uri)
-      @incoming_base_uri = base_uri
-      @incoming_base_uri_length = @base_uri.split(".").length
+    def incoming_base_uri=(incoming_base_uri)
+      @incoming_base_uri = incoming_base_uri
+      @incoming_base_uri_length = @incoming_base_uri.split(".").length
     end
 
     def ok?
