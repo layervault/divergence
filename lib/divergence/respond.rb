@@ -3,7 +3,7 @@ module Divergence
     # The main entry point for the application. This is called
     # by Rack.
     def call(env)
-      @req = RequestParser.new(env)
+      @req = RequestParser.new(env, @@config)
 
       # First, lets find out what subdomain/git branch
       # we're dealing with (if any).
@@ -21,7 +21,7 @@ module Divergence
       # Lets get down to business.
       begin
         # Get the proper branch name using a touch of magic
-        branch = @git.discover(@req.subdomain)
+        branch = @git.discover(@req.branch)
 
         # Prepare the branch and cache if needed
         path = prepare(branch)
@@ -62,7 +62,15 @@ module Divergence
     # Sets the forwarding host for the request. This is where
     # the proxy comes in.
     def fix_environment!(env)
-      env["HTTP_HOST"] = "#{config.forward_host}:#{config.forward_port}"
+      if @req.called_site_subdomain
+        request_domain = "#{@req.called_site_subdomain}.#{config.forward_host}:#{config.forward_port}"
+      else
+        request_domain = "#{config.forward_host}:#{config.forward_port}"
+      end
+      env["HTTP_HOST"] = request_domain
+      # Tell Rack::Proxy to use request_domain for the backend request. This is
+      # needed in case HTTP_X_FORWARDED_HOST is supplied by another proxy
+      Rack::Proxy.instance_method(:initialize).bind(self).call(:backend => "http://#{request_domain}")
     end
 
     def error!(branch)

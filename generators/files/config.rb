@@ -11,6 +11,10 @@ Divergence::Application.configure do |config|
   # have it's own Passenger instance, so don't get too carried away.
   # config.cache_num = 5
 
+  # Incoming base domain for requests, which will have a
+  # branch name prepended to it
+  config.incoming_base_uri = 'example.com'
+
   # Where should we proxy this request to? Normally you can leave
   # the host as 'localhost', but if you are using virtual hosts in
   # your web server setup, you may need to be more specific. You
@@ -18,4 +22,13 @@ Divergence::Application.configure do |config|
   # so update your web application to run on a different port.
   config.forward_host = 'localhost'
   config.forward_port = 80
+
+  # If your site code is used for more than one virtual host, with
+  # one being a subdomain of the other (e.g. example.com and
+  # api.example.com) and both under the same git repository, you can supply
+  # the additional domains in the config.site_subdomains array.
+  # Note: if you use a config.forward_host value of 'localhost', then
+  # Divergence will make the request to api.localhost, so you probably
+  # want to use a different forward_host.
+  # config.site_subdomains = ['api']
 end
