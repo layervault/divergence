@@ -19,7 +19,7 @@ module Divergence
     end
 
     def has_subdomain?
-      host_parts.length > 2
+      host_parts.length > @config.incoming_base_uri_length
     end
 
     def subdomain

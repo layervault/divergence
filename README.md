@@ -36,6 +36,8 @@ Divergence::Application.configure do |config|
   config.app_path = "/path/to/app_root"
   config.cache_path = "/path/to/cache_root"
 
+  config.incoming_base_uri = 'example.com'
+
   config.forward_host = 'localhost'
   config.forward_port = 80
 

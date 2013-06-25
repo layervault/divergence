@@ -11,6 +11,10 @@ Divergence::Application.configure do |config|
   # have it's own Passenger instance, so don't get too carried away.
   # config.cache_num = 5
 
+  # Incoming base domain for requests, which will have a
+  # branch name prepended to it
+  config.incoming_base_uri = 'example.com'
+
   # Where should we proxy this request to? Normally you can leave
   # the host as 'localhost', but if you are using virtual hosts in
   # your web server setup, you may need to be more specific. You
